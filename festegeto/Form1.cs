@@ -21,11 +21,6 @@ namespace festegeto
         Bitmap buffer;
         Graphics bufferg;
 
-        private void panel2_Resize(object sender, EventArgs e)
-        {
-            buffer = new Bitmap(panel2.Width, panel2.Height);
-            bufferg = Graphics.FromImage(buffer);
-        }
 
         Thread t;
 
@@ -41,12 +36,40 @@ namespace festegeto
         {
             bufferg.Clear(Color.White);
 
-            for (int y = 0; y < buffer.Height; y++)
-                for (int x = 0; x < buffer.Width; x++)
-                    if ((y * buffer.Width + x) % 8 == 1)
-                        buffer.SetPixel(x, y, Color.Black);
+            int h,w;
 
-            button1.Enabled = true;
+            lock (buffer)
+            {
+                h = buffer.Height;
+                w = buffer.Width;
+            }
+                        
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++)
+                    if ((y * w + x) % 8 == 1)
+                        lock (buffer)
+                            buffer.SetPixel(x, y, Color.Black);
+
+            this.Invoke(new Action(() => { button1.Enabled = true; }));
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (buffer == null)
+                return;
+
+            using (Graphics g = panel2.CreateGraphics())
+            {
+                lock (buffer)
+                    g.DrawImage(buffer, 0, 0);
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            buffer = new Bitmap(panel2.Width, panel2.Height);
+            lock (buffer)
+                bufferg = Graphics.FromImage(buffer);
         }
     }
 }
