@@ -36,14 +36,14 @@ namespace festegeto
         {
             bufferg.Clear(Color.White);
 
-            int h,w;
+            int h, w;
 
             lock (buffer)
             {
                 h = buffer.Height;
                 w = buffer.Width;
             }
-                        
+
             for (int y = 0; y < h; y++)
                 for (int x = 0; x < w; x++)
                     if ((y * w + x) % 8 == 1)
@@ -70,6 +70,17 @@ namespace festegeto
             buffer = new Bitmap(panel2.Width, panel2.Height);
             lock (buffer)
                 bufferg = Graphics.FromImage(buffer);
+        }
+
+        private void panel2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel2_MouseClick(object sender, MouseEventArgs e)
+        {
+            Form2 f2 = new Form2(String.Format("X={0}; Y={1}", e.X, e.Y));
+            f2.ShowDialog(this);
         }
     }
 }
